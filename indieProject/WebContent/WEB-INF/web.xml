@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" version="3.1">
+  <display-name>indieProject</display-name>
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>default.html</welcome-file>
+    <welcome-file>default.htm</welcome-file>
+    <welcome-file>default.jsp</welcome-file>
+  </welcome-file-list>
+
+
+	<servlet>
+		<servlet-name>MemberFrontController</servlet-name>
+		<servlet-class>com.indieProject.app.member.MemberFrontController</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>MemberFrontController</servlet-name>
+		<url-pattern>*.me</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>AmaMovieFrontController</servlet-name>
+		<servlet-class>com.indieProject.app.amamovie.AmaMovieFrontController</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>AmaMovieFrontController</servlet-name>
+		<url-pattern>*.ama</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>ProMovieFrontController</servlet-name>
+		<servlet-class>com.indieProject.app.promovie.ProMovieFrontController</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>ProMovieFrontController</servlet-name>
+		<url-pattern>*.pro</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>BoardFrontController</servlet-name>
+		<servlet-class>com.indieProject.app.board.BoardFrontController</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>BoardFrontController</servlet-name>
+		<url-pattern>*.bo</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>ManagerFrontController</servlet-name>
+		<servlet-class>com.indieProject.app.manager.ManagerFrontController</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>ManagerFrontController</servlet-name>
+		<url-pattern>*.ma</url-pattern>
+	</servlet-mapping>
+
+</web-app>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Manager">
+	<select id="getNoneExchangeData" resultType="popcornExchangeDataVO">
+		SELECT ROWNUM ROWNUMBER, aa.* FROM 
+		(SELECT pet.MEMBERID, pet.MONEY, pet.POPCORNNUM, pet.EXCHANGEDATE, pet.EXCHANGECHECK, pet.SUCCESSDATE, pet.EXCHANGENUM, mat.MEMBERNAME, mat.MEMBERBANK, mat.ACCOUNTNUM 
+		FROM POPCORN_EXCHANGE_TABLE pet , MEMBER_ACCOUNT_TABLE mat 
+		WHERE pet.MEMBERID = mat.MEMBERID AND pet.EXCHANGECHECK = 'no' ORDER BY EXCHANGENUM ASC) aa
+	</select>
+	<select id="getExchangeData" parameterType="hashmap" resultType="popcornExchangeDataVO">
+		SELECT * FROM 
+		(SELECT ROWNUM ROWNUMBER, aa.* FROM 
+		(SELECT pet.MEMBERID, pet.MONEY, pet.POPCORNNUM, pet.EXCHANGEDATE, pet.EXCHANGECHECK, pet.SUCCESSDATE, pet.EXCHANGENUM, mat.MEMBERNAME, mat.MEMBERBANK, mat.ACCOUNTNUM FROM POPCORN_EXCHANGE_TABLE pet , MEMBER_ACCOUNT_TABLE mat WHERE pet.MEMBERID = mat.MEMBERID AND pet.EXCHANGECHECK = 'yes' ORDER BY EXCHANGENUM DESC) aa) 
+		WHERE ROWNUMBER BETWEEN #{startRow} AND #{endRow}
+	</select>
+	<update id="setExchangeYes" parameterType="string">
+		UPDATE POPCORN_EXCHANGE_TABLE SET EXCHANGECHECK = 'yes', SUCCESSDATE = SYSDATE WHERE EXCHANGENUM = #{exchangeNum}
+	</update>
+	<select id="getExchangeCnt" resultType="_int">
+		SELECT COUNT(*) FROM POPCORN_EXCHANGE_TABLE WHERE EXCHANGECHECK = 'yes' ORDER BY EXCHANGENUM DESC
+	</select>
+	<select id="getNoneDeleteMovie" resultType="deleteMovieVO">
+		SELECT * FROM AMAMOVIE_DELETE_TABLE WHERE DELETECHECK = 'no' ORDER BY REQUESTDATE DESC
+	</select>
+	<delete id="deleteMovie" parameterType="_int">
+		DELETE AMAMOVIE_TABLE WHERE AMANUM = #{amaNum} 
+	</delete>
+	<select id="getMemberEmail" parameterType="string" resultType="string">
+		SELECT MEMBEREMAIL FROM MEMBER_TABLE WHERE MEMBERID = #{memberId}
+	</select>
+	<update id="setDeleteMovieYes" parameterType="_int">
+		UPDATE AMAMOVIE_DELETE_TABLE SET DELETECHECK = 'YES' WHERE AMANUM = #{amaNum}
+	</update>
+	<delete id="deleteMovieNo" parameterType="_int">
+		DELETE AMAMOVIE_DELETE_TABLE WHERE AMANUM = #{amaNum}
+	</delete>
+	<select id="managerCheck" parameterType="string" resultType="_int">
+		SELECT COUNT(*) FROM MANAGER_TABLE WHERE MEMBERID = #{memberId}
+	</select>
+</mapper>

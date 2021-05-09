@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Member">
+	<select id="checkId" parameterType="string" resultType="_int">
+		SELECT COUNT(*) FROM MEMBER_TABLE WHERE MEMBERID = #{memberId}
+	</select>
+	
+	<insert id="signUp" parameterType="memberVO">
+		INSERT INTO MEMBER_TABLE VALUES(#{memberId}, #{memberPw}, #{memberName}, #{memberEmail}, 0, 0)
+	</insert>
+	
+	<select id="checkEmail" parameterType="string" resultType="_int">
+		SELECT COUNT(*) FROM MEMBER_TABLE WHERE MEMBEREMAIL = #{memberEmail}
+	</select>
+	
+	<select id="login" parameterType="map" resultType="_int">
+		SELECT COUNT(*) FROM MEMBER_TABLE WHERE MEMBERID = #{memberId} AND MEMBERPW = #{memberPw}
+	</select>
+	
+	<select id="getEmail" parameterType="string" resultType="string">
+		SELECT MEMBEREMAIL FROM MEMBER_TABLE WHERE MEMBERID = #{memberId}
+	</select>
+	
+	<select id="findId" parameterType="hashMap" resultType="string">
+		SELECT MEMBERID FROM MEMBER_TABLE WHERE MEMBERNAME = #{memberName} AND MEMBEREMAIL = #{memberEmail}
+	</select>
+	
+	<select id="findPw" parameterType="hashMap" resultType="_int">
+		SELECT COUNT(*) FROM MEMBER_TABLE WHERE MEMBERNAME = #{memberName} AND MEMBERID = #{memberId} AND MEMBEREMAIL = #{memberEmail}
+	</select>
+	
+	<update id="newPw" parameterType="map" >
+		UPDATE MEMBER_TABLE SET MEMBERPW = #{memberPw} WHERE MEMBERID =#{memberId}
+	</update>
+	
+	<select id="myMovieNum" parameterType="string" resultType="_int">
+		SELECT COUNT(*) FROM AMAMOVIE_TABLE WHERE MEMBERID = #{memberId}
+	</select>
+	
+	<select id="myReviewNum" parameterType="string" resultType="_int">
+		SELECT COUNT(*) FROM AMAREVIEW_TABLE WHERE MEMBERID = #{memberId}
+	</select>
+	
+	<select id="myBoardNum" parameterType="string" resultType="_int">
+		SELECT COUNT(*) FROM BOARD_TABLE WHERE MEMBERID = #{memberId}	
+	</select>
+	
+	<select id="myReplyNum" parameterType="string" resultType="_int">
+		SELECT COUNT(*) FROM BOARDREPLY_TABLE WHERE MEMBERID = #{memberId}
+	</select>
+	
+	<select id="myPopcornNum" parameterType="string" resultType="_int">
+		SELECT MYPOPCORN FROM MEMBER_TABLE WHERE MEMBERID = #{memberId}
+	</select>
+	
+	<select id="myReceivedPopcornNum" parameterType="string" resultType="_int">
+		SELECT POPCORNNUM FROM MEMBER_TABLE WHERE MEMBERID = #{memberId}
+	</select>
+	
+	<select id="myMovieList" parameterType="string" resultType="amaMovieVO">
+		SELECT * FROM (SELECT * FROM AMAMOVIE_TABLE WHERE MEMBERID = #{memberId} ORDER BY AMADATE DESC) <![CDATA[WHERE ROWNUM <= 5]]>
+	</select>
+	
+	<select id="myBoardList" parameterType="string" resultType="boardVO">
+		SELECT * FROM (SELECT * FROM BOARD_TABLE WHERE MEMBERID = #{memberId} ORDER BY BOARDDATE DESC) <![CDATA[WHERE ROWNUM <= 5]]>
+	</select>
+	<select id="myBoardListAll" parameterType="map" resultType="boardVO">
+		SELECT * FROM (SELECT ROWNUM R, D.* FROM (SELECT * FROM BOARD_TABLE WHERE MEMBERID = #{memberId} ORDER BY BOARDDATE DESC) D) B WHERE B.R BETWEEN #{startRow} AND #{endRow}
+	</select>
+
+	<select id="myBoardReplyList" parameterType="string" resultType="boardReplyVO">
+		SELECT * FROM (SELECT * FROM BOARDREPLY_TABLE WHERE MEMBERID = #{memberId} ORDER BY REPLYDATE DESC) <![CDATA[WHERE ROWNUM <= 5]]>
+	</select>
+
+	<select id="myReviewList" parameterType="string" resultType="amaMovieReviewVO">
+		SELECT * FROM (SELECT * FROM AMAREVIEW_TABLE WHERE MEMBERID = #{memberId} ORDER BY REPLYDATE DESC) <![CDATA[WHERE ROWNUM <= 5]]>
+	</select>
+	
+	<select id="checkPwGetData" parameterType="hashMap" resultType="memberVO">
+		SELECT * FROM MEMBER_TABLE WHERE MEMBERID = #{memberId} AND MEMBERPW = #{memberPw}
+	</select> 
+	<select id="getMemberName" parameterType="string" resultType="string">
+		SELECT MEMBERNAME FROM MEMBER_TABLE WHERE MEMBERID = #{memberId}
+	</select>
+	<select id="myPopcornList" parameterType="hashMap" resultType="myPagePopcornVO">
+		SELECT PU.RECEIVEID, A.AMATITLEKOR, PU.POPCORNNUM, PU.SENDDATE FROM POPCORN_USE_TABLE PU JOIN AMAMOVIE_TABLE A ON PU.AMANUM = A.AMANUM WHERE PU.SENDID = #{memberId} AND PU.SENDDATE BETWEEN TO_DATE(#{date1}, 'YYYY-MM-DD') AND TO_DATE(#{date2}, 'YYYY-MM-DD') +0.99999 ORDER BY PU.SENDDATE DESC
+	</select>
+	<select id="myReviewListAll" parameterType="hashMap" resultType="amaMovieReviewVO">
+      SELECT * FROM
+          (SELECT ROWNUM R, D.* FROM
+            (SELECT * FROM AMAREVIEW_TABLE WHERE MEMBERID = #{memberId} ORDER BY REPLYDATE DESC) D) B
+      WHERE B.R BETWEEN #{startRow} AND #{endRow}
+   </select>
+   <select id="amaMovieTitle"  resultType="amaMovieVO">
+   		SELECT A.AMATITLEKOR, A.AMANUM 
+   		FROM AMAMOVIE_TABLE A, AMAREVIEW_TABLE R 
+   		WHERE A.AMANUM = R.AMANUM 
+   </select>
+	<select id="myBoardReplyListAll" parameterType="hashMap" resultType="boardReplyVO">
+      SELECT * FROM
+          (SELECT ROWNUM R, D.* FROM
+            (SELECT * FROM BOARDREPLY_TABLE WHERE MEMBERID = #{memberId} ORDER BY REPLYDATE DESC) D) B
+      WHERE B.R BETWEEN #{startRow} AND #{endRow}
+   </select>
+   <select id="popcornCharge" parameterType="hashMap">
+   		UPDATE MEMBER_TABLE SET MYPOPCORN = #{popCorn} WHERE MEMBERID = #{memberId}
+   </select>
+   <select id="myMovieListAll" parameterType="hashMap" resultType="amaMovieVO">
+		SELECT AMANUM, AMATITLEENG, AMATITLEKOR, AMAMAKEDATE, AMAMOVIELENGTH, AMADIRECTOR, GENRE, RATING, LINK, POPCORN, SYNOPSIS, THEME, MEMBERID, AMACOUNT, AMADATE FROM (SELECT am.*, ROWNUM rn FROM (SELECT * FROM AMAMOVIE_TABLE WHERE MEMBERID = #{memberId} ORDER BY AMADATE DESC) am) WHERE rn BETWEEN #{startRow} AND #{endRow}
+	</select>
+	<select id="myMovieListAllPoster" parameterType="_int" resultType="amaMoviePosterVO">
+		SELECT * FROM AMAPOSTERFILES_TABLE WHERE AMANUM = #{amaNum}
+	</select>
+	<update id="updateMyPopcorn" parameterType="map">
+		UPDATE MEMBER_TABLE SET MYPOPCORN = MYPOPCORN - #{myPopcorn} WHERE MEMBERID = #{memberId}
+	</update>
+	<update id="updatePopcornNum" parameterType="map">
+		UPDATE MEMBER_TABLE SET POPCORNNUM = POPCORNNUM + #{popcornNum} WHERE MEMBERID = #{memberId}
+	</update>
+	<select id="checkAccount" parameterType="string" resultType="_int">
+		SELECT COUNT(*) FROM MEMBER_ACCOUNT_TABLE WHERE MEMBERID = #{memberId}
+	</select>
+	<insert id="applyExchange" parameterType="popcornExchangeVO">
+		INSERT INTO POPCORN_EXCHANGE_TABLE VALUES (#{memberId}, #{money}, #{popcornNum}, SYSDATE, 'no', EXCHANGE_SEQ.NEXTVAL, TO_DATE('2001-01-01', 'YYYY-MM-DD'))
+	</insert>
+	<update id="subPopcorn" parameterType="hashmap">
+		UPDATE MEMBER_TABLE SET POPCORNNUM = POPCORNNUM - #{exchangePopcorn} WHERE MEMBERID = #{memberId}
+	</update>
+	<insert id="addAccount" parameterType="memberAccountVO">
+		INSERT INTO MEMBER_ACCOUNT_TABLE VALUES (#{memberId}, #{memberName}, #{memberBank}, #{accountNum})
+	</insert>
+	<update id="changeEmail" parameterType="hashMap">
+		UPDATE MEMBER_TABLE SET MEMBEREMAIL = #{memberEmail} WHERE MEMBERID = #{memberId}
+	</update>
+	<update id="changePwEmail" parameterType="hashMap">
+		UPDATE MEMBER_TABLE SET MEMBERPW = #{memberPw}, MEMBEREMAIL = #{memberEmail} WHERE MEMBERID = #{memberId}
+	</update>
+	<delete id="drop" parameterType="string">
+		DELETE MEMBER_TABLE WHERE MEMBERID = #{memberId}
+	</delete>
+	<insert id="requestDeleteMovie" parameterType="deleteMovieVO">
+		INSERT INTO AMAMOVIE_DELETE_TABLE VALUES (#{memberId}, #{amaNum}, #{amaTitleKor}, SYSDATE, TO_DATE('2001-01-01', 'YYYY-MM-DD'), 'no', #{reason})
+	</insert>
+	<select id="getMovie" parameterType="hashmap" resultType="amaMovieVO">
+		SELECT * FROM AMAMOVIE_TABLE WHERE AMANUM = #{amaNum} AND MEMBERID = #{memberId}
+	</select>
+	<select id="checkDeleteRequest" parameterType="_int" resultType="_int">
+		SELECT COUNT(*) FROM AMAMOVIE_DELETE_TABLE WHERE AMANUM = #{amaNum}
+	</select>
+</mapper>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AmaMovie">
+	<insert id="insertMovie" parameterType="amaMovieVO">
+		INSERT INTO AMAMOVIE_TABLE 
+		VALUES (AMAMOVIE_SEQ.NEXTVAL, #{amaTitleEng}, #{amaTitleKor}, TO_DATE(#{amaMakeDate},'YYYY.MM.DD'), #{amaMovieLength}, #{amaDirector}, #{genre}, #{rating}, #{link}, #{popcorn}, #{synopsis}, #{theme}, #{memberId}, 0, SYSDATE)
+	</insert>
+	
+	<select id="getMovieNum" parameterType="amaMovieVO" resultType="_int">
+		SELECT AMANUM FROM AMAMOVIE_TABLE WHERE AMATITLEENG = #{amaTitleEng} AND AMATITLEKOR = #{amaTitleKor} AND AMAMAKEDATE = #{amaMakeDate}
+	</select>
+	
+	<insert id="insertMaker" parameterType="amaMovieMakerVO">
+		INSERT INTO AMAMOVIEMAKER_TABLE VALUES (#{amaNum}, #{makerPosition}, #{makerName})
+	</insert>
+	
+	<insert id="insertActor" parameterType="amaMovieActorVO">
+		INSERT INTO AMAMOVIEACTOR_TABLE VALUES (#{amaNum}, #{amaCast}, #{actorName})
+	</insert>
+	
+	<insert id="insertPoster" parameterType="amaMoviePosterVO">
+		INSERT INTO AMAPOSTERFILES_TABLE VALUES (#{amaNum}, #{fileName})
+	</insert>
+	
+	<insert id="insertStillCut" parameterType="amaMovieStillCutVO">
+		INSERT INTO AMASTILLCUTFILES_TABLE VALUES (${amaNum}, #{fileName})
+	</insert>
+	<select id="getAmaData" parameterType="_int" resultType="amaMovieVO">
+		SELECT * FROM AMAMOVIE_TABLE WHERE AMANUM = #{amaNum}
+	</select>
+	<select id="getAmaPoster" parameterType="_int" resultType="amaMoviePosterVO">
+		SELECT * FROM AMAPOSTERFILES_TABLE WHERE AMANUM = #{amaNum}
+	</select>
+	<select id="getAmaStillcut" parameterType="_int" resultType="amaMovieStillCutVO">
+		SELECT * FROM AMASTILLCUTFILES_TABLE WHERE AMANUM = #{amaNum}
+	</select>
+	<select id="getAmaMaker" parameterType="_int" resultType="amaMovieMakerVO">
+		SELECT * FROM AMAMOVIEMAKER_TABLE WHERE AMANUM = #{amaNum}
+	</select>
+	<select id="getAmaActor" parameterType="_int" resultType="amaMovieActorVO">
+		SELECT * FROM AMAMOVIEACTOR_TABLE WHERE AMANUM = #{amaNum}
+	</select>
+	<select id="getAmaReviewRe5" parameterType="_int" resultType="amaMovieReviewVO">
+		SELECT * FROM (SELECT * FROM AMAREVIEW_TABLE WHERE AMANUM = #{amaNum} ORDER BY REPLYDATE DESC) <![CDATA[WHERE ROWNUM <= 5]]>
+	</select>
+	<select id="getAmaReview" parameterType="hashmap" resultType="amaMovieReviewVO">
+		SELECT * FROM 
+			(SELECT ROWNUM R, D.*FROM 
+				(SELECT * FROM AMAREVIEW_TABLE WHERE AMANUM = #{amaNum} ORDER BY REPLYDATE DESC) D) B 
+		WHERE B.R BETWEEN #{startRow} AND #{endRow}
+	</select>
+	<select id="getAmaReviewNum" parameterType="_int" resultType="_int">
+		SELECT COUNT(*) FROM AMAREVIEW_TABLE WHERE AMANUM = #{amaNum}
+	</select>
+	<select id="getPopcornSender" parameterType="_int" resultType="popcornVO">
+		SELECT * FROM POPCORN_USE_TABLE WHERE AMANUM = #{amaNum} ORDER BY POPCORNNUM DESC
+	</select>
+	<select id="getStarAvg" parameterType="_int" resultType="_double">
+		SELECT AVG(STARS) FROM AMAREVIEW_TABLE WHERE AMANUM = #{amaNum}
+	</select>
+	<select id="checkReviewId" parameterType="hashMap" resultType="_int">
+		SELECT COUNT(*) FROM AMAREVIEW_TABLE WHERE AMANUM = #{amaNum} AND MEMBERID = #{memberId}
+	</select>
+	<insert id="insertAmaReview" parameterType="amaMovieReviewVO">
+		INSERT INTO AMAREVIEW_TABLE VALUES (#{amaNum}, AMAREPLY_SEQ.NEXTVAL, #{stars}, #{memberId}, #{replyContent}, SYSDATE)
+	</insert>
+	<delete id="deleteAmaReview" parameterType="hashMap">
+		DELETE AMAREVIEW_TABLE WHERE AMANUM = #{amaNum} AND MEMBERID = #{memberId}
+	</delete>
+	
+	<select id="getGenre" resultType="string">
+		SELECT DISTINCT GENRE FROM AMAMOVIE_TABLE
+	</select>
+	<select id="getAmaMovieAndPosterList" parameterType="string" resultType="amaMovieAndPosterVO">
+		SELECT * FROM AMAMOVIE_TABLE at2, AMAPOSTERFILES_TABLE at3 WHERE at2.AMANUM = at3.AMANUM AND at3.FILENAME LIKE 'main_%' AND at2.GENRE = #{genre}
+	</select>
+	
+	<insert id="modifyMovie" parameterType="amaMovieVO">
+		UPDATE AMAMOVIE_TABLE SET AMATITLEENG = #{amaTitleEng}, AMATITLEKOR = #{amaTitleKor}, AMAMAKEDATE = TO_DATE(#{amaMakeDate},'YYYY.MM.DD'), AMAMOVIELENGTH = #{amaMovieLength}, AMADIRECTOR = #{amaDirector}, GENRE = #{genre}, 
+		RATING = #{rating}, LINK = #{link}, POPCORN = #{popcorn}, SYNOPSIS = #{synopsis}, THEME = #{theme}, AMADATE = SYSDATE 
+		WHERE AMANUM = #{amaNum}
+	</insert>
+	<delete id="deleteMaker" parameterType="_int">
+		DELETE AMAMOVIEMAKER_TABLE WHERE AMANUM = #{amaNum}
+	</delete>
+	<delete id="deleteActor" parameterType="_int">
+		DELETE AMAMOVIEACTOR_TABLE WHERE AMANUM = #{amaNum}
+	</delete>
+	<select id="getMainAmaMovieAndPosterList" resultType="amaMovieAndPosterVO">
+		SELECT * FROM (SELECT * FROM AMAMOVIE_TABLE ORDER BY AMADATE DESC) a, AMAPOSTERFILES_TABLE b WHERE ROWNUM <![CDATA[<=]]> 20 AND a.AMANUM = b.AMANUM AND b.FILENAME LIKE 'main_%'
+	</select>
+	
+	<insert id="sendPopcorn" parameterType="popcornVO">
+		INSERT INTO POPCORN_USE_TABLE VALUES (#{sendId}, #{receiveId}, SYSDATE, #{amaNum}, #{popcornNum}, #{popcornContent}, POPCORN_SEQ.NEXTVAL)
+	</insert>
+	
+	<select id="getSendNum" resultType="_int">
+		SELECT POPCORN_SEQ.CURRVAL FROM DUAL
+	</select>
+	<update id="updatePopcornContent" parameterType="map">
+		UPDATE POPCORN_USE_TABLE SET POPCORNCONTENT = #{content} WHERE SENDNUM = #{sendNum}
+	</update>
+	<select id="amaMovieKorList" parameterType="string" resultType="amaMovieVO">
+	SELECT * FROM AMAMOVIE_TABLE WHERE REPLACE (AMATITLEKOR, ' ', '') LIKE '%' || #{amaTitleKor} || '%'
+	</select>
+	<select id="amaMovieEngList" parameterType="string" resultType="amaMovieVO">
+	SELECT * FROM AMAMOVIE_TABLE WHERE UPPER(AMATITLEENG) LIKE UPPER( #{amaTitleEng} ) AND LOWER(AMATITLEENG) LIKE LOWER( #{amaTitleEng} )
+	</select>
+</mapper>

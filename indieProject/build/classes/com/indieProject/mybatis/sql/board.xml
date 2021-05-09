@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Board">
+	<select id="getBoard" parameterType="_int" resultType="boardVO">
+		SELECT * FROM BOARD_TABLE WHERE BOARDNUM = #{boardNum}
+	</select>
+	<select id="getBoardImages" parameterType="_int" resultType="boardImageVO">
+		SELECT * FROM BOARDIMAGES_TABLE WHERE BOARDNUM = #{boardNum} ORDER BY ROWNUM DESC
+	</select>
+	<select id="getBoardReplies" parameterType="_int" resultType="boardReplyVO">
+		SELECT * FROM BOARDREPLY_TABLE WHERE BOARDNUM = #{boardNum} ORDER BY REPLYDATE DESC
+	</select>
+	<insert id="insertBoard" parameterType="boardVO">
+		INSERT INTO BOARD_TABLE VALUES(FREEBOARD_SEQ.NEXTVAL, #{memberId}, #{boardContent}, 0, SYSDATE, #{boardImage})
+	</insert>
+	<insert id="insertBoardImages" parameterType="boardImageVO">
+		INSERT INTO BOARDIMAGES_TABLE VALUES (#{boardNum}, #{imageName})
+	</insert>
+	<select id="getBoardNum" resultType="_int">
+		SELECT FREEBOARD_SEQ.CURRVAL FROM DUAL
+	</select>
+	<insert id="insertBoardReply" parameterType="boardReplyVO">
+		INSERT INTO BOARDREPLY_TABLE VALUES (#{boardNum}, BOARDREPLY_SEQ.NEXTVAL, #{memberId}, #{replyContent}, SYSDATE)
+	</insert>
+	<update id="updateBoardReply" parameterType="boardReplyVO">
+		UPDATE BOARDREPLY_TABLE SET REPLYCONTENT = #{replyContent} WHERE REPLYNUM = #{replyNum}
+	</update>
+	<delete id="deleteBoardReply" parameterType="_int">
+		DELETE FROM BOARDREPLY_TABLE WHERE REPLYNUM = #{replyNum}
+	</delete>
+	<update id="updateBoard" parameterType="boardVO">
+		UPDATE BOARD_TABLE
+		SET BOARDCONTENT = #{boardContent}, BOARDIMAGE = #{boardImage} 
+		WHERE BOARDNUM = #{boardNum}
+	</update>
+	<update id="updateBoardContent" parameterType="boardVO">
+		UPDATE BOARD_TABLE
+		SET BOARDCONTENT = #{boardContent} 
+		WHERE BOARDNUM = #{boardNum}
+	</update>
+	<delete id="deleteBoard" parameterType="_int">
+		DELETE FROM BOARD_TABLE
+		WHERE BOARDNUM = #{boardNum}
+	</delete>
+	<delete id="deleteImages" parameterType="_int">
+		DELETE FROM BOARDIMAGES_TABLE WHERE BOARDNUM = #{boardNum}
+	</delete>
+	<select id="getBoardListNum" resultType="_int">
+		SELECT COUNT(*) FROM BOARD_TABLE
+	</select>
+	<select id="getBoardList" parameterType="map" resultType="boardVO">
+		SELECT * FROM (SELECT ROWNUM R, D.* FROM (SELECT * FROM BOARD_TABLE ORDER BY BOARDDATE DESC) D) B WHERE B.R BETWEEN #{startRow} AND #{endRow}
+	</select>
+	<select id="getSearchedBoardList" parameterType="map" resultType="boardVO">
+		SELECT * FROM (SELECT ROWNUM R, D.* FROM (SELECT * FROM BOARD_TABLE WHERE BOARDCONTENT LIKE '%' || #{keyword} || '%' ORDER BY BOARDDATE DESC) D) B 
+		WHERE B.R BETWEEN #{startRow} AND #{endRow}
+	</select>
+	<delete id="deleteReply" parameterType="_int">
+		DELETE FROM BOARDREPLY_TABLE WHERE BOARDNUM = #{boardNum}
+	</delete>
+</mapper>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	<typeAliases>
+		<typeAlias type="com.indieProject.app.member.vo.MemberVO" alias="memberVO"/>
+		<typeAlias type="com.indieProject.app.amamovie.vo.AmaMovieVO" alias="amaMovieVO"/>
+		<typeAlias type="com.indieProject.app.board.vo.BoardVO" alias="boardVO"/>
+		<typeAlias type="com.indieProject.app.board.vo.BoardImageVO" alias="boardImageVO"/>
+		<typeAlias type="com.indieProject.app.board.vo.BoardReplyVO" alias="boardReplyVO"/>
+		<typeAlias type="com.indieProject.app.amamovie.vo.AmaMovieReviewVO" alias="amaMovieReviewVO"/>
+		<typeAlias type="com.indieProject.app.member.vo.MyPagePopcornVO" alias="myPagePopcornVO"/>
+		<typeAlias type="com.indieProject.app.amamovie.vo.AmaMovieActorVO" alias="amaMovieActorVO"/>
+		<typeAlias type="com.indieProject.app.amamovie.vo.AmaMovieMakerVO" alias="amaMovieMakerVO"/>
+		<typeAlias type="com.indieProject.app.amamovie.vo.AmaMoviePosterVO" alias="amaMoviePosterVO"/>
+		<typeAlias type="com.indieProject.app.amamovie.vo.AmaMovieReviewVO" alias="amaMovieReviewVO"/>
+		<typeAlias type="com.indieProject.app.amamovie.vo.AmaMovieStillCutVO" alias="amaMovieStillCutVO"/>
+		<typeAlias type="com.indieProject.app.amamovie.vo.AmaMovieVO" alias="amaMovieVO"/>
+		<typeAlias type="com.indieProject.app.amamovie.vo.PopcornVO" alias="popcornVO"/>
+		<typeAlias type="com.indieProject.app.amamovie.vo.AmaMovieAndPosterVO" alias="amaMovieAndPosterVO"/>
+		<typeAlias type="com.indieProject.app.member.vo.MemberAccountVO" alias="memberAccountVO"/>
+		<typeAlias type="com.indieProject.app.member.vo.PopcornExchangeVO" alias="popcornExchangeVO"/>
+		<typeAlias type="com.indieProject.app.manager.vo.PopcornExchangeDataVO" alias="popcornExchangeDataVO"/>
+		<typeAlias type="com.indieProject.app.member.vo.DeleteMovieVO" alias="deleteMovieVO"/>
+	</typeAliases>
+	
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC"/>
+			<dataSource type="POOLED">
+				<property name="driver" value="oracle.jdbc.OracleDriver"/>
+				<property name="url" value="jdbc:oracle:thin:@127.0.0.1:1521/XE"/>
+				<property name="username" value="hr"/>
+				<property name="password" value="hr"/>
+			</dataSource>
+		</environment>
+	</environments>
+	
+	<mappers>
+		<mapper resource="com/indieProject/mybatis/sql/member.xml"/>
+		<mapper resource="com/indieProject/mybatis/sql/board.xml"/>
+		<mapper resource="com/indieProject/mybatis/sql/amamovie.xml"/>
+		<mapper resource="com/indieProject/mybatis/sql/manager.xml"/>
+	</mappers>
+	
+</configuration>
